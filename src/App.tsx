@@ -1,10 +1,8 @@
-import RouterView from "@/router/RouterView"
+import { RouterProvider } from "react-router-dom";
+import { routes } from "./router";
+
 function App() {
-  return (
-    <>
-      <RouterView></RouterView>
-    </>
-  );
+  return <RouterProvider router={routes} />;
 }
 
 export default App;

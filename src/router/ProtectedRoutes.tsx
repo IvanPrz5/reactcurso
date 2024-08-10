@@ -1,18 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-interface Props {
-    children: JSX.Element
-    token: Storage | undefined | null;
-}
-
-function ProtectedRoutes({children, token}: Props) {
-    const navigate = useNavigate();
-
-    if(token == undefined || token == null){
-        navigate("/login");
+function ProtectedRoutes() {
+    const token: string | null = localStorage.getItem("token")
+    if(token == null){
+        return <Navigate to="/login"></Navigate>
     }
 
-    return children;
+    return <Outlet></Outlet>;
 }
 
-export default ProtectedRoutes
+export default ProtectedRoutes;
