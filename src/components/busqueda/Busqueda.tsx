@@ -1,10 +1,14 @@
 import { CalendarMonth } from "@mui/icons-material";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
+import EditNoteIcon from "@mui/icons-material/EditNote";
 import {
   Box,
   Button,
   Card,
   CardContent,
   CardHeader,
+  Chip,
   Divider,
   FormControl,
   FormHelperText,
@@ -14,17 +18,21 @@ import {
   Select,
   SelectChangeEvent,
   Skeleton,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import Tabla from "./Tabla";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import TablaNomina from "./nominas/TablaNomina";
+import { Controller, useForm } from "react-hook-form";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { SetStateAction, useState } from "react";
 import { Nomina } from "@/interface/Nominas";
-import { getNominas } from "@/services/timbrado/Timbrado";
-import { Inputs } from "@/interface/Busqueda";
+import { fetchBuscaEmpleado, getNominas } from "@/services/busqueda/Busqueda";
+import { Inputs, InputsEmpleado } from "@/interface/Busqueda";
+import FormEmpleado from "./empleados/FormEmpleado";
+import { EmpleadosData } from "@/interface/Empleado";
+import TablaEmpleados from "./empleados/TablaEmpleados";
 
 const menu = [
   { tipo: "Fechas de Inicio", num: "1" },
@@ -34,22 +42,16 @@ const menu = [
   { tipo: "Nombre de Carga", num: "5" },
 ];
 
+const menuFilter = ["Nombre", "RFC", "Tipo de Jornada"];
+
 export default function Busqueda() {
-  const [item, setItem] = useState("");
   const [rows, setRows] = useState<Nomina[]>([]);
   const [skeleton, setSkeleton] = useState(Boolean);
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setItem(event.target.value as string);
-  };
-
-  const changeStateRows = (array: SetStateAction<Nomina[]>) => {
-    setRows(array);
-  };
-
-  const changeStateSkeleton = (show: boolean) => {
-    setSkeleton(show);
-  };
+  const [open, setOpen] = useState(false);
+  const [filter, setFilter] = useState(false);
+  const [dataFilter, setDataFilter] = useState<InputsEmpleado>(Object);
+  const [rowsEmpleados, setRowsEmpleados] = useState<EmpleadosData[]>([]);
+  const [item, setItem] = useState("");
 
   const {
     register,
@@ -57,26 +59,80 @@ export default function Busqueda() {
     control,
     formState: { errors },
   } = useForm<Inputs>();
-  
-  function getRowsData(promise: Promise<Nomina[]>){
-    promise.then((response) => {
-      changeStateRows(response);
-    })
-    .catch((e) => {
-      console.log("Fatal " + e);
-    }).finally(() => {
-      changeStateSkeleton(false);
-    });
-  }
-  
-  const buscarSubmit: SubmitHandler<Inputs> = (data) => {
-    changeStateSkeleton(true);
-    getRowsData(getNominas(data, item))
+
+  const handleOpen = () => {
+    setOpen(true);
   };
 
+  const changeRowsNomina = (array: SetStateAction<Nomina[]>) => {
+    setRows(array);
+  };
+
+  const changeRowsEmpleado = (array: SetStateAction<EmpleadosData[]>) => {
+    setRowsEmpleados(array);
+  };
+
+  const changeStateSkeleton = (show: boolean) => {
+    setSkeleton(show);
+  };
+
+  const changeStateFilter = (status: boolean) => {
+    setFilter(status);
+  };
+
+  const getPropsEmpleado = (data: InputsEmpleado) => {
+    changeStateFilter(true);
+    setDataFilter(data);
+  };
+
+  const handleChange = (event: SelectChangeEvent) => {
+    changeStateFilter(false)
+    changeRowsEmpleado([]);
+    changeRowsNomina([]);
+    setItem(event.target.value as string);
+  };
+
+  function getRowsNomina(promise: Promise<Nomina[]>) {
+    promise
+      .then((response) => {
+        changeRowsNomina(response);
+      })
+      .catch((e) => {
+        console.log("Fatal " + e);
+      })
+      .finally(() => {
+        changeStateSkeleton(false);
+      });
+  }
+
+  function getRowsEmpleado(promise: Promise<EmpleadosData[]>) {
+    promise
+      .then((response) => {
+        changeRowsEmpleado(response);
+      })
+      .catch((e) => {
+        console.log("Fatal " + e);
+      })
+      .finally(() => {
+        changeStateSkeleton(false);
+      });
+  }
+
+  function buscarSubmit(data: Inputs) {
+    changeStateSkeleton(true);
+    if (!filter) {
+      getRowsNomina(getNominas(data, item));
+    } else {
+      const fechas = { fechaInicio: data.fechaInicio, fechaFin: data.fechaFin };
+      const copy = Object.assign(dataFilter, fechas);
+      getRowsEmpleado(fetchBuscaEmpleado(copy));
+    }
+  }
+
+  // Separar por componentes
   return (
     <div>
-      <Card sx={{ minWidth: 300 }}>
+      <Card sx={{ minWidth: 200 }}>
         <CardHeader
           avatar={<CalendarMonth />}
           title={<Typography>BUSQUEDA POR FECHAS</Typography>}
@@ -90,6 +146,50 @@ export default function Busqueda() {
             sx={{ minWidth: "100%" }}
           >
             <Grid container spacing={2}>
+              {item != "5" && (
+                <Grid
+                  item
+                  xs={12}
+                  sx={{ display: "flex", justifyContent: "right" }}
+                >
+                  {filter ? (
+                    <Stack direction="row" spacing={1}>
+                      <Chip
+                        color="primary"
+                        variant="outlined"
+                        label={
+                          menuFilter[Number(dataFilter.tipoBusqueda) - 1] +
+                          ": " +
+                          dataFilter.datoEmpleado
+                        }
+                        onClick={() => {
+                          handleOpen();
+                        }}
+                        icon={<EditNoteIcon />}
+                      />
+                      <Chip
+                        label="Reset"
+                        color="error"
+                        onClick={() => {
+                          changeStateFilter(false);
+                        }}
+                        icon={<FilterAltOffIcon />}
+                        variant="outlined"
+                      />
+                    </Stack>
+                  ) : (
+                    <Chip
+                      label="Filtro Empleado"
+                      color="success"
+                      variant="outlined"
+                      icon={<FilterAltIcon />}
+                      onClick={() => {
+                        handleOpen();
+                      }}
+                    ></Chip>
+                  )}
+                </Grid>
+              )}
               <Grid item xs={12} md={4}>
                 <Controller
                   name="tipoBusqueda"
@@ -126,7 +226,7 @@ export default function Busqueda() {
                 <>
                   <Grid item xs={12} md={4}>
                     <Controller
-                      name="fechaUno"
+                      name="fechaInicio"
                       rules={{ required: "Requerido" }}
                       control={control}
                       render={({ field }) => (
@@ -140,8 +240,8 @@ export default function Busqueda() {
                               textField: {
                                 size: "small",
                                 fullWidth: true,
-                                helperText: errors.fechaUno?.message,
-                                error: Boolean(errors.fechaUno),
+                                helperText: errors.fechaInicio?.message,
+                                error: Boolean(errors.fechaInicio),
                               },
                             }}
                           />
@@ -151,7 +251,7 @@ export default function Busqueda() {
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <Controller
-                      name="fechaDos"
+                      name="fechaFin"
                       rules={{ required: "Requerido" }}
                       control={control}
                       render={({ field }) => (
@@ -165,8 +265,8 @@ export default function Busqueda() {
                               textField: {
                                 size: "small",
                                 fullWidth: true,
-                                helperText: errors.fechaDos?.message,
-                                error: Boolean(errors.fechaDos),
+                                helperText: errors.fechaFin?.message,
+                                error: Boolean(errors.fechaFin),
                               },
                             }}
                           />
@@ -203,7 +303,13 @@ export default function Busqueda() {
       {skeleton == false ? (
         <Card sx={{ marginTop: 2 }}>
           <CardContent>
-            <Tabla array={rows?.length > 0 ? rows : []}></Tabla>
+            {!filter ? (
+              <TablaNomina array={rows?.length > 0 ? rows : []}></TablaNomina>
+            ) : (
+              <TablaEmpleados
+                array={rowsEmpleados?.length > 0 ? rowsEmpleados : []}
+              ></TablaEmpleados>
+            )}
           </CardContent>
         </Card>
       ) : (
@@ -225,6 +331,12 @@ export default function Busqueda() {
           />
         </Box>
       )}
+
+      <FormEmpleado
+        open={open}
+        handleCloseDialog={() => setOpen(false)}
+        emitPropsEmpleado={getPropsEmpleado}
+      ></FormEmpleado>
     </div>
   );
 }

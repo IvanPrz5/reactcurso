@@ -37,7 +37,7 @@ const GraficaMxnTimb: React.FC = () => {
           ],
           options: {
             theme: {
-              mode: 'light',
+              mode: 'dark',
             },
             chart: {
               type: 'bar',

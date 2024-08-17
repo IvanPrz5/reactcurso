@@ -4,6 +4,8 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "@/views/Home/Home";
 import ProtectedRoutes from "./ProtectedRoutes";
 import Timbrado from "@/views/Timbrado/Timbrado";
+import Cargar from "@/views/Cargar/Cargar";
+import Descargas from "@/views/Descargas/Descargas";
 
 export const routes = createBrowserRouter([
   {
@@ -21,8 +23,16 @@ export const routes = createBrowserRouter([
             element: <Home></Home>
           },
           {
+            path: "/cargar",
+            element: <Cargar></Cargar>
+          },
+          {
             path: "/timbrado",
             element: <Timbrado></Timbrado>
+          },
+          {
+            path: "/descargas",
+            element: <Descargas></Descargas>
           }
         ]
       }

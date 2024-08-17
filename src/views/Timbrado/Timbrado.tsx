@@ -1,4 +1,4 @@
-import Busqueda from '@/components/timbrado/Busqueda'
+import Busqueda from '@/components/busqueda/Busqueda'
 import { Box } from '@mui/material'
 
 function Timbrado() {

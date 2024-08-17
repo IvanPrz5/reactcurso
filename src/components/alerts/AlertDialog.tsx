@@ -1,40 +1,34 @@
-import { useState } from "react";
-import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import Icon from "@mdi/react";
+import { ConfigAlert } from "@/interface/AlertDialog";
 
-export default function AlertDialog({initialOpen}: {initialOpen: boolean}) {
-  const [isOpen, setOpen] = useState(initialOpen);
-  
-  const handleClose = () => {
-    setOpen(false);
-  };
-
+export default function AlertDialog({open, config}: { open: boolean; config: ConfigAlert}) {
   return (
     <Dialog
-      open={isOpen}
-      onClose={handleClose}
+      open={open}
+      onClose={() => {}}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">
-        {"Use Google's location service?"}
+      <DialogTitle
+        id="alert-dialog-title"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Icon path={config.icon} size={5} color={config.color} />
+        {config.title}
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          Let Google help apps determine location. This means sending anonymous
-          location data to Google, even when no apps are running.
+          Haz click en el boton amarillo de la tabla para más detalles
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Disagree</Button>
-        <Button onClick={handleClose} autoFocus>
-          Agree
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 }

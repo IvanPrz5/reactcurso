@@ -23,9 +23,10 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import DraftsIcon from "@mui/icons-material/Drafts";
-import SendIcon from "@mui/icons-material/Send";
+import HomeIcon from '@mui/icons-material/Home';
+import PageviewIcon from '@mui/icons-material/Pageview';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Container, Stack } from "@mui/material";
@@ -129,17 +130,22 @@ export default function MiniDrawer() {
     {
       name: "Home",
       ruta: "/home",
-      icon: <InboxIcon />,
+      icon: <HomeIcon />,
+    },
+    {
+      name: "Cargar",
+      ruta: "/cargar",
+      icon: <CloudUploadIcon />,
     },
     {
       name: "Busqueda",
-      ruta: "/Timbrado",
-      icon: <DraftsIcon />,
+      ruta: "/timbrado",
+      icon: <PageviewIcon />,
     },
     {
       name: "Descargas",
       ruta: "/descargas",
-      icon: <SendIcon />,
+      icon: <CloudDownloadIcon />,
     },
   ];
 
