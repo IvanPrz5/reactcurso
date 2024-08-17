@@ -1,4 +1,4 @@
-import { NominaArray } from "@/interface/Nominas";
+import { Nomina } from "@/interface/Nominas";
 import {
   Box,
   Toolbar,
@@ -23,11 +23,10 @@ function CustomNoRowsOverlay() {
   );
 }
 
-
 const columns: GridColDef[] = [
   // { field: "id", headerName: "ID", width: 70 },
   { field: "año", headerName: "Año", width: 70 },
-  { field: "mes", headerName: "Mes", width: 80 },
+  { field: "mesLetra", headerName: "Mes", width: 80 },
   { field: "fechaInicio", headerName: "Inicio Periodo" },
   { field: "fechaFin", headerName: "Fin Periodo" },
   { field: "fechaPago", headerName: "Fecha Pago" },
@@ -48,7 +47,7 @@ const columns: GridColDef[] = [
   },
 ];
 
-export default function Tabla({ array }: NominaArray) {
+export default function Tabla({ array }: {array: Nomina[]}) {
   return (
     <>
       <Toolbar>
@@ -66,7 +65,7 @@ export default function Tabla({ array }: NominaArray) {
               paginationModel: { page: 0, pageSize: 5 },
             },
           }}
-          pageSizeOptions={[5, 10, 15, array.length]}
+          pageSizeOptions={[5, 25, 50, 100]}
           checkboxSelection
           slots={{
             noRowsOverlay: CustomNoRowsOverlay,

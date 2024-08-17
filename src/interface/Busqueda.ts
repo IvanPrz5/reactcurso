@@ -1,6 +1,11 @@
 export interface Inputs {
-    tipoBusqueda: string;
-    fechaUno: Date;
-    fechaDos: Date;
-    nombreCarga: string;
-  }
+  tipoBusqueda: string;
+  fechaInicio: Date;
+  fechaFin: Date;
+  nombreCarga: string;
+}
+
+export interface InputsEmpleado{
+  tipoBusqueda: string;
+  datoEmpleado: string;
+}

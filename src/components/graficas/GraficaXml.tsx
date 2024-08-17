@@ -48,7 +48,7 @@ const GraficaXml: React.FC = () => {
           ],
           options: {
             theme: {
-              mode: "light",
+              mode: "dark",
             },
             chart: {
               type: "bar",
@@ -69,7 +69,9 @@ const GraficaXml: React.FC = () => {
               enabled: true,
               formatter(val: number) {
                 const format = currencyFormatter(val).split(".");
-                return "Xml Timbrados : " + format[0].replace("$", "");
+                if(format[0].replace("$", "") != "0"){
+                  return "Xml Timbrados : " + format[0].replace("$", "");
+                }
               },
             },
             xaxis: {
